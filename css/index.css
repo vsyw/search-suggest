@@ -1,0 +1,45 @@
+body {
+  background-color: 
+}
+
+.search {
+  display: flex;
+}
+
+.search_block {
+  display: inline-block;
+}
+
+#search_input {
+  width: 200px;
+  height: 25px;
+}
+
+.search_suggest {
+  border: 1px solid #cdcdcd;
+  display: none;
+}
+
+.search_suggest > div {
+  width 200px;
+  height: 40px;
+  padding: 2px;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+}
+
+.item:hover {
+  background-color: #cdcdcd;
+}
+
+.logo {
+  width: 30px;
+  height: 30px;
+}
+
+.name {
+  margin-left: 10px;
+}
