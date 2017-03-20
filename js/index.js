@@ -140,17 +140,14 @@ function bindInputEvent(inputField, list) {
     }
   }
 
-  // var stringValue = inputField.value;
-  inputField.onkeyup = function() {
-    if (inputField.value === 0) {
-      setFocusedItemIndex(0);
-    }
+  inputField.onkeyup = function(e) {
+    // if (inputField.value === 0) {
+    //   setFocusedItemIndex(0);
+    // }
+
     var filter = this.value.toUpperCase();
-    // console.log(inputField.value);
-
     var results = document.querySelectorAll(".item");
-
-    // var updatedFocusItemIdex = false;
+    var updatedFocusItemIdex = false;
 
     results.forEach(function(item, idx) {
       var name = item.querySelector('.name').innerText.toUpperCase();
@@ -158,15 +155,10 @@ function bindInputEvent(inputField, list) {
         item.style.display = "none";
       } else {
         item.style.display = "flex";
-        // if (!updatedFocusItemIdex) {
-        //   updatedFocusItemIdex = true;
-        //   focusedItemIndex = idx;
-        // }
-        // if (idx === focusedItemIndex) {
-        //   item.className += ' focusedItem';
-        // } else {
-        //   item.className = 'item';
-        // }
+        if ([13, 38, 40].indexOf(e.keyCode) === -1 && !updatedFocusItemIdex) {
+          updatedFocusItemIdex = true;
+          setFocusedItemIndex(idx);
+        }
       }
     });
   }
