@@ -31,7 +31,8 @@ body {
   align-items: center;
 }
 
-.item:hover {
+/*.item:hover, */
+.focusedItem {
   background-color: #cdcdcd;
 }
 
