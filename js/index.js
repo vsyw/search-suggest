@@ -209,8 +209,22 @@ function bindInputEvent(inputField, list) {
 }
 
 function init() {
-  var list = document.querySelector(".search_suggest");
+  // var list = document.querySelector(".search_suggest");
+  var block = document.createElement('div');
+  block.className = 'search_block';
+
+  var list = document.createElement('div');
+  list.className = 'search_suggest';
+  
   var inputField = document.getElementById('search_input');
+  
+  var parent = inputField.parentNode;
+  parent.replaceChild(block, inputField);
+
+  block.appendChild(inputField);
+  block.appendChild(list);
+
+
 
   list.onmousemove = function() {
     if (disableMouseover) {
