@@ -59,24 +59,23 @@ var curIndex = 0;
 var disableMouseover = false;
 
 function setFocusedItemIndex(newIndex) {
-  var results = document.querySelectorAll(".item");
-  if (newIndex >= 0 && newIndex < results.length && curIndex !== newIndex) {
-    results[newIndex].className = 'item focusedItem';
-    results[curIndex].className = 'item';
+  var items = document.querySelectorAll(".item");
+  if (newIndex >= 0 && newIndex < items.length && curIndex !== newIndex) {
+    items[newIndex].className = 'item focusedItem';
+    items[curIndex].className = 'item';
     
-    var list = document.querySelector(".search_suggest");
-    var outterHeight = parseInt(window.getComputedStyle(list).getPropertyValue('max-height'), 10);
-    var itemHeight = parseInt(window.getComputedStyle(results[newIndex]).getPropertyValue('height'), 10);
-    var dTop = results[newIndex].offsetTop;
-    var list = document.querySelector(".search_suggest");
+    var searchSuggestList = document.querySelector(".search_suggest");
+    var outterHeight = parseInt(window.getComputedStyle(searchSuggestList).getPropertyValue('max-height'), 10);
+    var itemHeight = parseInt(window.getComputedStyle(items[newIndex]).getPropertyValue('height'), 10);
+    var dTop = items[newIndex].offsetTop;
     
-    // console.log('dTop', dTop, 'outterHeight', outterHeight, 'list.scrollTop', list.scrollTop);
+    // console.log('dTop', dTop, 'outterHeight', outterHeight, 'searchSuggestList.scrollTop', searchSuggestList.scrollTop);
     
-    if (dTop > (outterHeight + list.scrollTop)) {
-      list.scrollTop = dTop - outterHeight;
-    } else if (dTop < (outterHeight + list.scrollTop) && !(dTop > (list.scrollTop + itemHeight))) {
-      // list.scrollTop = dTop - outterHeight;
-      results[newIndex].scrollIntoView();
+    if (dTop > (outterHeight + searchSuggestList.scrollTop)) {
+      searchSuggestList.scrollTop = dTop - outterHeight;
+    } else if (dTop < (outterHeight + searchSuggestList.scrollTop) && !(dTop > (searchSuggestList.scrollTop + itemHeight))) {
+      // searchSuggestList.scrollTop = dTop - outterHeight;
+      items[newIndex].scrollIntoView();
     }
 
     curIndex = newIndex;
@@ -84,8 +83,8 @@ function setFocusedItemIndex(newIndex) {
 }
 
 function rebindMouseOverEvent() {
-  var results = document.querySelectorAll(".item");
-  results.forEach(function(item, idx) {
+  var items = document.querySelectorAll(".item");
+  items.forEach(function(item, idx) {
     item.onmouseover = function() {
       setFocusedItemIndex(idx);
     }
@@ -110,7 +109,7 @@ function renderItem(data, inputField, idx) {
   }
 
   if (idx === curIndex) {
-    item.className += ' focusedItem';
+    item.className = 'item focusedItem';
   } else {
     item.className = 'item';
   }
@@ -134,11 +133,11 @@ function setSelectedItem(e) {
     console.log('local storage length', Object.keys(localStorage));
 
     /* Remove selected item from parent node */
-    var list = document.querySelector(".search_suggest");
-    list.removeChild(selectedItem);
+    var searchSuggestList = document.querySelector(".search_suggest");
+    searchSuggestList.removeChild(selectedItem);
 
-    /* Insert selected item before the first child of the list */
-    list.insertBefore(selectedItem, list.childNodes[0]); 
+    /* Insert selected item before the first child of the searchSuggestList */
+    searchSuggestList.insertBefore(selectedItem, searchSuggestList.childNodes[0]); 
   }
 
 }
@@ -153,12 +152,12 @@ function focusNextOption(e) {
   setFocusedItemIndex(curIndex + 1);
 }
 
-function bindInputEvent(inputField, list) {
+function bindInputFieldEvents(inputField, searchSuggestList) {
   inputField.onfocus = function() {
-    list.style.display = 'block';
+    searchSuggestList.style.display = 'block';
   }
   inputField.onblur = function() {
-    list.style.display = 'none';
+    searchSuggestList.style.display = 'none';
   }
   inputField.onkeydown = function(e) {
     switch (e.keyCode) {
@@ -178,7 +177,7 @@ function bindInputEvent(inputField, list) {
 
   inputField.onkeyup = function(e) {
     var filter = this.value.toUpperCase();
-    var results = document.querySelectorAll(".item");
+    var items = document.querySelectorAll(".item");
     var updatedFocusItemIdex = false;
 
     /* 
@@ -187,13 +186,13 @@ function bindInputEvent(inputField, list) {
     */
     if (!disableMouseover) {
       console.log('disable mouse over');
-      results.forEach(function(item) {
+      items.forEach(function(item) {
         item.onmouseover = null;
         disableMouseover = true;
       });
     }
 
-    results.forEach(function(item, idx) {
+    items.forEach(function(item, idx) {
       var name = item.querySelector('.name').innerText.toUpperCase();
       if (name.indexOf(filter) === -1) {
         item.style.display = "none";
@@ -209,34 +208,34 @@ function bindInputEvent(inputField, list) {
 }
 
 function init() {
-  // var list = document.querySelector(".search_suggest");
-  var block = document.createElement('div');
-  block.className = 'search_block';
+  // var searchSuggestList = document.querySelector(".search_suggest");
+  var searchBlock = document.createElement('div');
+  searchBlock.className = 'search_block';
 
-  var list = document.createElement('div');
-  list.className = 'search_suggest';
+  var searchSuggestList = document.createElement('div');
+  searchSuggestList.className = 'search_suggest';
   
   var inputField = document.getElementById('search_input');
   
   var parent = inputField.parentNode;
-  parent.replaceChild(block, inputField);
+  parent.replaceChild(searchBlock, inputField);
 
-  block.appendChild(inputField);
-  block.appendChild(list);
+  searchBlock.appendChild(inputField);
+  searchBlock.appendChild(searchSuggestList);
 
 
 
-  list.onmousemove = function() {
+  searchSuggestList.onmousemove = function() {
     if (disableMouseover) {
       disableMouseover = false;
       rebindMouseOverEvent();
     }
   }
 
-  bindInputEvent(inputField, list);
+  bindInputFieldEvents(inputField, searchSuggestList);
   
   data['item'].forEach((d, idx) => {
-    list.appendChild(renderItem(d, inputField, idx));
+    searchSuggestList.appendChild(renderItem(d, inputField, idx));
   });
 
 }
