@@ -42,3 +42,9 @@
 .name {
   margin-left: 10px;
 }
+
+.deleteButton {
+  margin-left: auto;
+  margin-right: 3%;
+  cursor: pointer;
+}

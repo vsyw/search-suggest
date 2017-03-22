@@ -41,7 +41,31 @@ class SearchSuggest {
 
       this.curIndex = newIndex;
     }
-  }  
+  }
+
+  renderDeleteButton(item) {
+    if (item.querySelector('.deleteButton')) return;
+
+    const deleteButton = document.createElement('p');
+    deleteButton.className = 'deleteButton';
+    deleteButton.innerHTML = '&#10060';
+    deleteButton.style.display = 'none';
+    
+    /* 
+      1. Remove item form local storage
+      2. Hide delete button after removing
+      3. Reorder suggested items
+    */
+    deleteButton.onmousedown = (e) => {
+      e.stopPropagation();
+      const res = window.confirm('Are you sure you want to remove the item from search history?');
+      if (res) {
+        window.localStorage.removeItem(item.getElementsByClassName('name')[0].innerText);
+        deleteButton.style.display = 'none';
+      }
+    };
+    item.appendChild(deleteButton);
+  }
 
   renderItem(data, inputField, idx, searchSuggestList) {
     const item = document.createElement('div');
@@ -57,13 +81,16 @@ class SearchSuggest {
     item.appendChild(name);
     
     item.onmousedown = (e) => this.setSelectedItem(e, inputField, searchSuggestList);
-    item.onmouseover = () => this.setFocusedItemIndex(idx, searchSuggestList)
+    item.onmouseover = () => this.setFocusedItemIndex(idx, searchSuggestList);
 
     if (idx === this.curIndex) {
       item.className = 'item focusedItem';
     } else {
       item.className = 'item';
     }
+    
+    this.renderDeleteButton(item);
+
     return item;
   }
   
@@ -93,9 +120,10 @@ class SearchSuggest {
     e.preventDefault();
     const selectedItem = document.querySelector('.focusedItem');
     const inputText = selectedItem.getElementsByClassName('name')[0];
-    
-    console.log(inputText.innerText);
-    
+    const deleteButton = selectedItem.getElementsByClassName('deleteButton')[0]
+
+    deleteButton.style.display = 'block';
+
     inputField.onblur();
     inputField.value = inputText.innerText;
 
@@ -103,8 +131,8 @@ class SearchSuggest {
     if (window.localStorage !== "undefined") {
       console.log('can use local storage');
       localStorage.setItem(inputField.value, Date.now());
-      console.log('get local storage', localStorage.getItem(inputField.value));
-      console.log('local storage length', Object.keys(localStorage));
+      // console.log('get local storage', localStorage.getItem(inputField.value));
+      // console.log('local storage length', Object.keys(localStorage));
       
       // this.setFocusedItemIndex(0, searchSuggestList);
 
@@ -178,7 +206,6 @@ class SearchSuggest {
           item.style.display = "flex";
           if ([13, 38, 40].indexOf(e.keyCode) === -1 && !updatedFocusItemIdex) {
             updatedFocusItemIdex = true;
-            console.log('fuck');
             this.setFocusedItemIndex(idx, searchSuggestList);
           }
         }
