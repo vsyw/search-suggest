@@ -43,13 +43,17 @@ class SearchSuggest {
     }
   }
 
-  renderDeleteButton(item, searchSuggestList) {
+  renderDeleteButton(item, idx, searchSuggestList, numOfHistoryData) {
     if (item.querySelector('.deleteButton')) return;
 
     const deleteButton = document.createElement('p');
     deleteButton.className = 'deleteButton';
     deleteButton.innerHTML = '&#10060';
-    deleteButton.style.display = 'none';
+    if (idx < numOfHistoryData) {
+      deleteButton.style.display = 'block';
+    } else {
+      deleteButton.style.display = 'none';
+    }
     
     /* 
       1. Remove item form local storage
@@ -62,15 +66,19 @@ class SearchSuggest {
       if (res) {
         window.localStorage.removeItem(item.getElementsByClassName('name')[0].innerText);
         deleteButton.style.display = 'none';
-        searchSuggestList.removeChild(item);
-        searchSuggestList.appendChild(item);
-        this.items = searchSuggestList.childNodes;
+
+        // searchSuggestList.removeChild(item);
+        // searchSuggestList.appendChild(item);
+        // this.items = searchSuggestList.childNodes;
+        
+        // this.curIndex = searchSuggestList.childNodes.length - 1;
+        // this.setFocusedItemIndex(0, searchSuggestList);
       }
     };
     item.appendChild(deleteButton);
   }
 
-  renderItem(data, inputField, idx, searchSuggestList) {
+  renderItem(data, inputField, idx, searchSuggestList, numOfHistoryData) {
     const item = document.createElement('div');
     item.className = 'item';
     const name = document.createElement('div');
@@ -92,13 +100,12 @@ class SearchSuggest {
       item.className = 'item';
     }
     
-    this.renderDeleteButton(item, searchSuggestList);
+    this.renderDeleteButton(item, idx, searchSuggestList, numOfHistoryData);
 
     return item;
   }
   
   rebindMouseOverEvent(searchSuggestList) {
-    // var items = document.querySelectorAll(".item");
     this.items.forEach((item, idx) => {
       item.onmouseover = () => {
         this.setFocusedItemIndex(idx, searchSuggestList);
@@ -106,9 +113,30 @@ class SearchSuggest {
     });
   }
 
-  renderSearchSuggestList(data, searchSuggestList, inputField) {
-    data['item'].forEach((d, idx) => {
-      searchSuggestList.appendChild(this.renderItem(d, inputField, idx, searchSuggestList));
+  renderSearchSuggestList(data, searchHistory, searchSuggestList, inputField) {
+    
+    /* 
+      Init data order by the folloing rules:
+      1. History items with higher priority
+      2. History items are sorted with descending order (according to timestamp)
+    */
+    const newData = new Array(data.item.length);
+    let i = searchHistory.length;
+
+    data.item.forEach((item, idx) => {
+      const pos = searchHistory.indexOf(item.name);
+      if (pos !== -1) {
+        newData[pos] = item;
+      } else {
+        newData[i] = item;
+        ++i;
+      }
+    }); 
+
+    console.log(newData);
+
+    newData.forEach((d, idx) => {
+      searchSuggestList.appendChild(this.renderItem(d, inputField, idx, searchSuggestList, searchHistory.length));
     });
     searchSuggestList.onmousemove = () => {
       if (this.disableMouseover) {
@@ -217,17 +245,23 @@ class SearchSuggest {
   render() {
     const inputField = this.props.el;
     const data = this.props.data;
+    let searchHistory = [];
+    if (window.localStorage !== "undefined") {
+      searchHistory = Object.keys(localStorage).sort((a, b) => localStorage.getItem(b) - localStorage.getItem(a));
+    }
+    console.log(searchHistory);
 
     const searchBlock = document.createElement('div');
     const searchSuggestList = document.createElement('div');
 
     this.renderSearchBlock(inputField, searchBlock, searchSuggestList);
-    this.renderSearchSuggestList(data, searchSuggestList, inputField);
+    this.renderSearchSuggestList(data, searchHistory, searchSuggestList, inputField);
 
     this.outterHeight = parseInt(window.getComputedStyle(searchSuggestList).getPropertyValue('max-height'), 10);
     this.itemHeight = parseInt(window.getComputedStyle(this.items && this.items[0]).getPropertyValue('height'), 10);
 
     this.bindInputFieldEvents(inputField, searchSuggestList);
+    setInterval(() => console.log(this.curIndex), 1000);
   }
 
 }

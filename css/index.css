@@ -14,7 +14,7 @@
 .search_suggest {
   border: 1px solid #cdcdcd;
   display: none;
-  max-height: 150px;
+  max-height: 400px;
   overflow-y: scroll;
 }
 

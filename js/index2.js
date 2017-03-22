@@ -37,6 +37,22 @@ var data = {
       name: 'LINE Camera',
       logo: 'https://d.line-scdn.net/stf/line-lp/family/en/linecamera_icon_96.png'
     },
+    {
+      name: 'LINE DECO',
+      logo: 'https://d.line-scdn.net/stf/line-lp/family/en/LINE-DECO_96.jpg'
+    },
+    {
+      name: 'LINE Tools',
+      logo: 'https://d.line-scdn.net/stf/line-lp/family/en/LP_Family_icon_96_LINE-Tools.jpg'
+    },
+    {
+      name: 'Popcorn Buzz',
+      logo: 'https://d.line-scdn.net/stf/line-lp/family/en/lp_pop_appicon_96x96.png'
+    },
+    {
+      name: 'LINE Antivirus',
+      logo: 'https://d.line-scdn.net/stf/line-lp/family/en/LP_Family_icon_96_LINE-Antivirus.jpg'
+    },
   ]
 }
 
