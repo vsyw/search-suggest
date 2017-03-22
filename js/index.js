@@ -56,17 +56,40 @@ var data = {
 
 var focusedItemIndex = 0;
 var curIndex = 0;
+var disableMouseover = false;
 
 function setFocusedItemIndex(newIndex) {
-  console.log('inside');
   var results = document.querySelectorAll(".item");
   if (newIndex >= 0 && newIndex < results.length && curIndex !== newIndex) {
-    console.log('///////', newIndex, curIndex);
     results[newIndex].className = 'item focusedItem';
     results[curIndex].className = 'item';
+    
+    var list = document.querySelector(".search_suggest");
+    var outterHeight = parseInt(window.getComputedStyle(list).getPropertyValue('max-height'), 10);
+    var itemHeight = parseInt(window.getComputedStyle(results[newIndex]).getPropertyValue('height'), 10);
+    var dTop = results[newIndex].offsetTop;
+    var list = document.querySelector(".search_suggest");
+    
+    // console.log('dTop', dTop, 'outterHeight', outterHeight, 'list.scrollTop', list.scrollTop);
+    
+    if (dTop > (outterHeight + list.scrollTop)) {
+      list.scrollTop = dTop - outterHeight;
+    } else if (dTop < (outterHeight + list.scrollTop) && !(dTop > (list.scrollTop + itemHeight))) {
+      // list.scrollTop = dTop - outterHeight;
+      results[newIndex].scrollIntoView();
+    }
+
     curIndex = newIndex;
-    // console.log(curIndex);
   }
+}
+
+function rebindMouseOverEvent() {
+  var results = document.querySelectorAll(".item");
+  results.forEach(function(item, idx) {
+    item.onmouseover = function() {
+      setFocusedItemIndex(idx);
+    }
+  });
 }
 
 function renderItem(data, inputField, idx) {
@@ -80,14 +103,12 @@ function renderItem(data, inputField, idx) {
   logo.src = data.logo;
   item.appendChild(logo);
   item.appendChild(name);
-  item.onmousedown = function(e) {
-    e.preventDefault();
-    inputField.value = data.name;
-    inputField.onblur();
-  };
+  item.onmousedown = setSelectedItem;
   item.onmouseover = function(e) {
+    console.log('mouse over', idx);
     setFocusedItemIndex(idx);
   }
+
   if (idx === curIndex) {
     item.className += ' focusedItem';
   } else {
@@ -104,11 +125,26 @@ function setSelectedItem(e) {
   inputField.onblur();
   console.log(inputText.innerText);
   inputField.value = inputText.innerText;
+
+  /* Save to local storage */
+  if (window.localStorage !== "undefined") {
+    console.log('can use local storage');
+    localStorage.setItem(inputField.value, Date.now());
+    console.log('get local storage', localStorage.getItem(inputField.value));
+    console.log('local storage length', Object.keys(localStorage));
+
+    /* Remove selected item from parent node */
+    var list = document.querySelector(".search_suggest");
+    list.removeChild(selectedItem);
+
+    /* Insert selected item before the first child of the list */
+    list.insertBefore(selectedItem, list.childNodes[0]); 
+  }
+
 }
 
 function focusPreviousOption(e) {
   e.preventDefault();
-  console.log('fuck');
   setFocusedItemIndex(curIndex - 1);
 }
 
@@ -141,13 +177,21 @@ function bindInputEvent(inputField, list) {
   }
 
   inputField.onkeyup = function(e) {
-    // if (inputField.value === 0) {
-    //   setFocusedItemIndex(0);
-    // }
-
     var filter = this.value.toUpperCase();
     var results = document.querySelectorAll(".item");
     var updatedFocusItemIdex = false;
+
+    /* 
+      remove mouseover event while interacting with up down key
+      (up down key would cause scroll, and scroll will cause mouse over to particular item)
+    */
+    if (!disableMouseover) {
+      console.log('disable mouse over');
+      results.forEach(function(item) {
+        item.onmouseover = null;
+        disableMouseover = true;
+      });
+    }
 
     results.forEach(function(item, idx) {
       var name = item.querySelector('.name').innerText.toUpperCase();
@@ -167,11 +211,20 @@ function bindInputEvent(inputField, list) {
 function init() {
   var list = document.querySelector(".search_suggest");
   var inputField = document.getElementById('search_input');
-  
+
+  list.onmousemove = function() {
+    if (disableMouseover) {
+      disableMouseover = false;
+      rebindMouseOverEvent();
+    }
+  }
+
   bindInputEvent(inputField, list);
   
   data['item'].forEach((d, idx) => {
     list.appendChild(renderItem(d, inputField, idx));
   });
+
 }
 window.onload = init;
+
