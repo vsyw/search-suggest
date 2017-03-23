@@ -117,6 +117,7 @@ const searchSuggest2 = new SearchSuggest(props2);
 ##### Event binding methods
 - bindInputFieldEvents()
 - rebindMouseOverEvent()
+- rebindMousedownEvent()
 
 
 
