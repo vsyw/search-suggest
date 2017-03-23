@@ -51,7 +51,7 @@ class SearchSuggest {
     1. if the item comes from search history then display delete button
     2. Otherwise, the default value of display property is none
   */
-  renderDeleteButton(item, idx, searchSuggestList, numOfHistoryData) {
+  renderDeleteButton(item, idx, inputField, searchSuggestList, numOfHistoryData) {
     if (item.querySelector('.deleteButton')) return;
 
     const deleteButton = document.createElement('p');
@@ -85,6 +85,7 @@ class SearchSuggest {
         this.curIndex = searchSuggestList.childNodes.length - 1;
         this.setFocusedItemIndex(0, searchSuggestList);
         this.rebindMouseOverEvent(searchSuggestList);
+        this.rebindMousedownEvent(searchSuggestList, inputField);
       }
     };
     item.appendChild(deleteButton);
@@ -104,7 +105,10 @@ class SearchSuggest {
     item.appendChild(logo);
     item.appendChild(name);
     
-    item.onmousedown = (e) => this.setSelectedItem(e, inputField, searchSuggestList);
+    item.onmousedown = (e) => {
+      this.setFocusedItemIndex(idx, searchSuggestList);
+      this.setSelectedItem(e, inputField, searchSuggestList);
+    }
     item.onmouseover = () => this.setFocusedItemIndex(idx, searchSuggestList);
 
     if (idx === this.curIndex) {
@@ -113,7 +117,7 @@ class SearchSuggest {
       item.className = `${this.id} item`;
     }
     
-    this.renderDeleteButton(item, idx, searchSuggestList, numOfHistoryData);
+    this.renderDeleteButton(item, idx, inputField, searchSuggestList, numOfHistoryData);
 
     return item;
   }
@@ -122,6 +126,15 @@ class SearchSuggest {
     this.items.forEach((item, idx) => {
       item.onmouseover = () => {
         this.setFocusedItemIndex(idx, searchSuggestList);
+      }
+    });
+  }
+
+  rebindMousedownEvent(searchSuggestList, inputField) {
+    this.items.forEach((item, idx) => {
+      item.onmousedown = (e) => {
+        this.setFocusedItemIndex(idx, searchSuggestList);
+        this.setSelectedItem(e, inputField, searchSuggestList);
       }
     });
   }
@@ -189,6 +202,8 @@ class SearchSuggest {
 
     this.curIndex = 0;
     this.items = document.querySelectorAll(`.${this.id}.item`);
+    this.rebindMouseOverEvent(searchSuggestList);
+    this.rebindMousedownEvent(searchSuggestList, inputField);
 
   }
 
