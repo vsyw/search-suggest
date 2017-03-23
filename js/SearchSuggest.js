@@ -3,11 +3,11 @@ class SearchSuggest {
   /* Initialize varaibles and fire the main function render() */
   constructor(props) {
     this.props = props;
+    this.id = '';
     this.curIndex = 0;
     this.disableMouseover = false;
     this.outterHeight = 0;
     this.itemHeight = 0;
-
     this.items = [];
     
     this.render();
@@ -31,8 +31,8 @@ class SearchSuggest {
   */
   setFocusedItemIndex(newIndex, searchSuggestList) {
     if (newIndex >= 0 && newIndex < this.items.length && this.curIndex !== newIndex) {
-      this.items[newIndex].className = 'item focusedItem';
-      this.items[this.curIndex].className = 'item';
+      this.items[newIndex].className = `${this.id} item focusedItem`;
+      this.items[this.curIndex].className = `${this.id} item`;
 
       const dTop = this.items[newIndex].offsetTop;
       
@@ -93,7 +93,7 @@ class SearchSuggest {
   /* Render item with app name, app logo, delete button */
   renderItem(data, inputField, idx, searchSuggestList, numOfHistoryData) {
     const item = document.createElement('div');
-    item.className = 'item';
+    item.className = `${this.id} item`;
     const name = document.createElement('div');
     name.className = 'name';
     name.innerHTML = data.name;
@@ -108,9 +108,9 @@ class SearchSuggest {
     item.onmouseover = () => this.setFocusedItemIndex(idx, searchSuggestList);
 
     if (idx === this.curIndex) {
-      item.className = 'item focusedItem';
+      item.className = `${this.id} item focusedItem`;
     } else {
-      item.className = 'item';
+      item.className = `${this.id} item`;
     }
     
     this.renderDeleteButton(item, idx, searchSuggestList, numOfHistoryData);
@@ -156,7 +156,8 @@ class SearchSuggest {
         this.rebindMouseOverEvent(searchSuggestList);
       }
     }
-    this.items = document.querySelectorAll(".item");
+    this.items = document.querySelectorAll(`.${this.id}.item`);
+    console.log(this.items);
   }
   
   /*
@@ -164,7 +165,7 @@ class SearchSuggest {
   */
   setSelectedItem(e, inputField, searchSuggestList) {
     e.preventDefault();
-    const selectedItem = document.querySelector('.focusedItem');
+    const selectedItem = document.querySelector(`.${this.id}.focusedItem`);
     const inputText = selectedItem.getElementsByClassName('name')[0];
     const deleteButton = selectedItem.getElementsByClassName('deleteButton')[0]
 
@@ -185,7 +186,7 @@ class SearchSuggest {
     searchSuggestList.insertBefore(selectedItem, searchSuggestList.firstChild); 
 
     this.curIndex = 0;
-    this.items = document.querySelectorAll(".item");
+    this.items = document.querySelectorAll(`.${this.id}.item`);
 
   }
 
@@ -258,6 +259,7 @@ class SearchSuggest {
   /* Main function */
   render() {
     const inputField = this.props.el;
+    this.id = inputField.getAttribute('id');
     const data = this.props.data;
     let searchHistory = [];
     if (window.localStorage !== "undefined") {
