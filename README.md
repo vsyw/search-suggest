@@ -43,7 +43,7 @@ The `props` should be provided as an `Object`.
 
 The `el` property should be set to a CSS slector (#id) which must be as same as the `#id` you set for the `<input>` tag in the html file.  
 
-The `data` property should be an `Object` with the format as below, the `item` value is used to render options.  
+The `data` property should be an `Object` with the format as below, the `item` value is used as options in the suggest list.  
 
 ```javascript
 {
