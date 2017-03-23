@@ -259,7 +259,7 @@ class SearchSuggest {
     }
   }
 
-  /* Main metho */
+  /* Main method */
   render() {
     const inputField = this.props.el;
     this.id = inputField.getAttribute('id');

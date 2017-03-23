@@ -99,7 +99,7 @@ const searchSuggest2 = new SearchSuggest(props2);
 -  Be able to delete specific search history item
 - Supports mobile browsers, such as iOS Safari
 
-## Methods in SearchSuggest
+## Methods in SearchSuggest.js
 ##### Constructor:
 - Constructor()
 ##### Main method:
