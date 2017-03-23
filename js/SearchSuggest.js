@@ -1,5 +1,6 @@
 class SearchSuggest {
   
+  /* Initialize varaibles and fire the main function render() */
   constructor(props) {
     this.props = props;
     this.curIndex = 0;
@@ -12,6 +13,7 @@ class SearchSuggest {
     this.render();
   }
 
+  /* Contruct the searchBlock elements */
   renderSearchBlock(inputField, searchBlock, searchSuggestList) {
     searchBlock.className = 'search_block';
     searchSuggestList.className = 'search_suggest';
@@ -21,8 +23,12 @@ class SearchSuggest {
 
     searchBlock.appendChild(inputField);
     searchBlock.appendChild(searchSuggestList);
-  }  
+  }
 
+  /* 
+    Highlight the focused item by adding class name, 
+    and scroll the div to proper position that the selected item can be visible
+  */
   setFocusedItemIndex(newIndex, searchSuggestList) {
     if (newIndex >= 0 && newIndex < this.items.length && this.curIndex !== newIndex) {
       this.items[newIndex].className = 'item focusedItem';
@@ -40,6 +46,11 @@ class SearchSuggest {
     }
   }
 
+  /*
+    Render delete button by the following rules:
+    1. if the item comes from search history then display delete button
+    2. Otherwise, the default value of display property is none
+  */
   renderDeleteButton(item, idx, searchSuggestList, numOfHistoryData) {
     if (item.querySelector('.deleteButton')) return;
 
@@ -78,7 +89,8 @@ class SearchSuggest {
     };
     item.appendChild(deleteButton);
   }
-
+  
+  /* Render item with app name, app logo, delete button */
   renderItem(data, inputField, idx, searchSuggestList, numOfHistoryData) {
     const item = document.createElement('div');
     item.className = 'item';
@@ -113,9 +125,8 @@ class SearchSuggest {
       }
     });
   }
-
+  
   renderSearchSuggestList(data, searchHistory, searchSuggestList, inputField) {
-    
     /* 
       Init data order by the folloing rules:
       1. History items with higher priority
@@ -137,6 +148,8 @@ class SearchSuggest {
     newData.forEach((d, idx) => {
       searchSuggestList.appendChild(this.renderItem(d, inputField, idx, searchSuggestList, searchHistory.length));
     });
+
+    /* If mouse over event was removed (up down key pressed), rebind it when mouse move event recieved*/
     searchSuggestList.onmousemove = () => {
       if (this.disableMouseover) {
         this.disableMouseover = false;
@@ -145,7 +158,10 @@ class SearchSuggest {
     }
     this.items = document.querySelectorAll(".item");
   }
-
+  
+  /*
+    setSelectedItem is used to set input feild value with selected app name
+  */
   setSelectedItem(e, inputField, searchSuggestList) {
     e.preventDefault();
     const selectedItem = document.querySelector('.focusedItem');
@@ -183,6 +199,9 @@ class SearchSuggest {
     this.setFocusedItemIndex(this.curIndex + 1, searchSuggestList);
   }
 
+  /* 
+    Bind event listeners to input field
+  */
   bindInputFieldEvents(inputField, searchSuggestList) {
     inputField.onfocus = () => {
       searchSuggestList.style.display = 'block';
@@ -211,7 +230,7 @@ class SearchSuggest {
       let updatedFocusItemIdex = false;
 
       /* 
-        remove mouseover event while interacting with up down key
+        Remove mouseover event while interacting with up down key
         (up down key would cause scroll, and scroll will cause mouse over to particular item)
       */
       if (!this.disableMouseover) {
@@ -236,6 +255,7 @@ class SearchSuggest {
     }
   }
 
+  /* Main function */
   render() {
     const inputField = this.props.el;
     const data = this.props.data;
