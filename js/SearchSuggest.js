@@ -240,7 +240,8 @@ class SearchSuggest {
           this.disableMouseover = true;
         });
       }
-
+      
+      /* Search keyword */
       this.items.forEach((item, idx) => {
         const name = item.querySelector('.name').innerText.toUpperCase();
         if (name.indexOf(filter) === -1) {
