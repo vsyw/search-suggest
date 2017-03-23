@@ -1,6 +1,6 @@
 class SearchSuggest {
   
-  /* Initialize varaibles and fire the main function render() */
+  /* Initialize varaibles and fire the main method render() */
   constructor(props) {
     this.props = props;
     this.id = '';
@@ -13,7 +13,7 @@ class SearchSuggest {
     this.render();
   }
 
-  /* Contruct the searchBlock elements */
+  /* Create the searchBlock elements */
   renderSearchBlock(inputField, searchBlock, searchSuggestList) {
     searchBlock.className = 'search_block';
     searchSuggestList.className = 'search_suggest';
@@ -179,10 +179,12 @@ class SearchSuggest {
       localStorage.setItem(inputField.value, Date.now());
     }
 
-    /* Remove selected item from parent node */
-    searchSuggestList.removeChild(selectedItem);
+    /* 
+      1. Remove selected item from parent node,
+      2. Insert selected item before the first child of the searchSuggestList
+    */
 
-    /* Insert selected item before the first child of the searchSuggestList */
+    searchSuggestList.removeChild(selectedItem);
     searchSuggestList.insertBefore(selectedItem, searchSuggestList.firstChild); 
 
     this.curIndex = 0;
@@ -257,7 +259,7 @@ class SearchSuggest {
     }
   }
 
-  /* Main function */
+  /* Main metho */
   render() {
     const inputField = this.props.el;
     this.id = inputField.getAttribute('id');
@@ -270,6 +272,7 @@ class SearchSuggest {
     const searchBlock = document.createElement('div');
     const searchSuggestList = document.createElement('div');
 
+    /* Render methods */
     this.renderSearchBlock(inputField, searchBlock, searchSuggestList);
     this.renderSearchSuggestList(data, searchHistory, searchSuggestList, inputField);
 
