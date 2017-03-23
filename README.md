@@ -5,8 +5,8 @@ A pure JavaScript implementation of a suggest plugin for easier
 input search
 
 ## Demo & Examples
-Live demo: [iwantooxxoox.github.io/search-suggest](https://iwantooxxoox.github.io/search-suggest/)
-For local browser: Open up the `index.html` file.
+Live demo: [iwantooxxoox.github.io/search-suggest](https://iwantooxxoox.github.io/search-suggest/)  
+For local browser: Open up the `index.html` file.  
 
 ## Usage
 Include the JavaScript file `SearchSuggest.js` and the stylesheet in the HTML file.
